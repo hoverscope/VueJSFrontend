@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Math Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <link id="theme-style" rel="stylesheet" href="src/css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>
+          <img src="src/img/logo.png" alt="Logo" class="logo" />
+          {{ sitename }}
+        </h1>
+        <div class="header-right">
+          <button class="cart-button">
+            <i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})
+          </button>
+          <label class="switch">
+            <input type="checkbox" v-model="isDarkMode" @click="toggleTheme" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="image-container">
+          <img src="src/img/main-2.png" alt="Banner Image" />
+        </div>
+
+        <div class="section-heading">All the classes you need in one place</div>
+        <h1 class="section-info">
+          From critical skills to technical topics, Meow Meow Academy supports
+          your educational development.
+        </h1>
+
+        <h1 class="section-heading">Courses:</h1>
+
+        <label for="sortAttribute" >Sort by:</label>
+        <select v-model="sortAttribute" id="sortAttribute" class="filter">
+          <option value="price">Price</option>
+          <option value="location">Location</option>
+          <option value="title">Subject</option>
+          <option value="availableInventory">Availability</option>
+        </select>
+
+        <button @click="toggleSortOrder" class="filter">
+          Order: {{ sortOrder }}
+        </button>
+
+        <main>
+          <div class="product-grid">
+            <div
+              v-for="product in sortedProducts"
+              :key="product.id"
+              class="product"
+            >
+              <img :src="product.image" :alt="product.title" />
+              <div class="product-title">
+                <span v-text="product.title"></span>
+                <span class="product-price"
+                  >${{ product.price.toFixed(2) }}</span
+                >
+              </div>
+              <div>{{ product.location }}</div>
+              <div>Slots: {{ product.availableInventory }}</div>
+              <button
+                class="add-to-cart"
+                @click="addToCart(product)"
+                :disabled="product.availableInventory <= 0"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      let webstore = new Vue({
+        el: "#app",
+        data: {
+          sitename: "Meow Meow Classes",
+          sortOrder: "ascending",
+          isDarkMode: true,
+          sortAttribute: "price",
+          cartCount: 0,
+          cartItems: {},
+          products: [
+            {
+              id: 1001,
+              title: "Math Classes",
+              price: 200.0,
+              image: "src/img/math.png",
+              location: "London, United Kingdom",
+              availableInventory: 5,
+            },
+            {
+              id: 1002,
+              title: "Science Classes",
+              price: 150.0,
+              image: "src/img/science.png",
+              location: "New York, USA",
+              availableInventory: 5,
+            },
+            {
+              id: 1003,
+              title: "History Classes",
+              price: 100.0,
+              image: "src/img/hist.png",
+              location: "Berlin, Germany",
+              availableInventory: 5,
+            },
+            {
+              id: 1004,
+              title: "Geography Classes",
+              price: 130.0,
+              image: "src/img/geo.png",
+              location: "Paris, France",
+              availableInventory: 5,
+            },
+            {
+              id: 1005,
+              title: "Physics Classes",
+              price: 180.0,
+              image: "src/img/phy.png",
+              location: "Tokyo, Japan",
+              availableInventory: 5,
+            },
+            {
+              id: 1006,
+              title: "Biology Classes",
+              price: 200.0,
+              image: "src/img/bio.png",
+              location: "Dubai, United Kingdom",
+              availableInventory: 5,
+            },
+            {
+              id: 1007,
+              title: "Music Classes",
+              price: 200.0,
+              image: "src/img/music.png",
+              location: "Dubai, United Kingdom",
+              availableInventory: 5,
+            },
+            {
+              id: 1008,
+              title: "Law Classes",
+              price: 200.0,
+              image: "src/img/law.png",
+              location: "Dubai, United Kingdom",
+              availableInventory: 5,
+            },
+            {
+              id: 1009,
+              title: "Art Classes",
+              price: 200.0,
+              image: "src/img/art.png",
+              location: "Dubai, United Kingdom",
+              availableInventory: 5,
+            },
+            {
+              id: 10010,
+              title: "Economics Classes",
+              price: 200.0,
+              image: "src/img/eco.png",
+              location: "Dubai, United Kingdom",
+              availableInventory: 5,
+            },
+          ],
+        },
+        computed: {
+          sortedProducts() {
+            return this.products.slice().sort((a, b) => {
+              let aVal = a[this.sortAttribute];
+              let bVal = b[this.sortAttribute];
+
+              if (typeof aVal === "string") {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+              }
+
+              if (this.sortOrder === "ascending") {
+                return aVal > bVal ? 1 : -1;
+              } else {
+                return aVal < bVal ? 1 : -1;
+              }
+            });
+          },
+        },
+        methods: {
+          toggleSortOrder() {
+            this.sortOrder =
+              this.sortOrder === "ascending" ? "descending" : "ascending";
+          },
+
+          toggleTheme() {
+            this.isDarkMode = !this.isDarkMode; // Toggle dark mode
+            this.updateTheme();
+          },
+
+          updateTheme() {
+            const link = document.getElementById("theme-style");
+            // Apply the appropriate class based on the mode
+            if (this.isDarkMode) {
+              link.href = "src/css/styles.css"; // Assume styles.css includes both
+              document.body.classList.add("dark-mode"); // Add dark mode class
+            } else {
+              link.href = "src/css/styles.css"; // Use the same for light mode
+              document.body.classList.remove("dark-mode"); // Remove dark mode class
+            }
+          },
+
+          addToCart(product) {
+            if (product.availableInventory > 0) {
+              product.availableInventory--; // Reduce the available inventory
+              if (this.cartItems[product.id]) {
+                this.cartItems[product.id].count++; // Increment count
+              } else {
+                this.cartItems[product.id] = { name: product.title, count: 1 }; // Add new item
+              }
+              this.cartCount++; // Increase cart count
+            }
+          },
+        },
+        mounted() {
+          this.updateTheme();
+        },
+      });
+    </script>
+  </body>
+</html>
