@@ -9,6 +9,7 @@
   --cart-button-bg: #000;
   --cart-button-color: #fff;
   --product-bg: #fff;
+
   --product-border: #ddd;
   --product-title-color: #333;
   --add-to-cart-bg: #fff;
@@ -17,15 +18,17 @@
   --section-info-color: #9d9d9d;
   --filter-bg: #fff;
   --filter-color: #000;
+  --arrow-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="black" d="M7 10l5 5 5-5z"/></svg>'); /* Light mode arrow */
 }
 
 .dark-mode {
   --body-bg: #161616;
+
   --header-bg: #1c1c1c;
   --header-color: #fff;
   --cart-button-bg: #000;
   --cart-button-color: #fff;
-  --product-bg: #3d3d3d;
+  --product-bg: #1c1c1c;
   --product-border: #fff;
   --product-title-color: #fff;
   --add-to-cart-bg: #000;
@@ -34,12 +37,12 @@
   --section-info-color: #9d9d9d;
   --filter-bg: #000;
   --filter-color: #fff;
+  --arrow-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="white" d="M7 10l5 5 5-5z"/></svg>'); /* Dark mode arrow */
 }
 
 body {
   font-family: var(--font-family);
-  margin-left: 0px;
-  margin-right: 0px;
+  margin: 0;
   background-color: var(--body-bg);
   padding: 0;
   box-sizing: border-box;
@@ -101,16 +104,45 @@ h1 {
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 2fr);
   gap: 20px;
   padding: 20px;
 }
 
 .product {
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 15px;
   text-align: left;
   color: var(--product-title-color);
+  background-color: var(--product-bg);
+  transition: transform 0.2s ease-in-out, opacity 1s ease;
+  width: 90%;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter, 
+.fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0; /* Start with opacity 0 */
+  transform: translateY(10px); /* Optional: slide up effect on enter */
+}
+
+.product-icon-container {
+  display: flex; /* Use flexbox for the icon container */
+  justify-content: center; /* Center the icon horizontally */
+  margin-bottom: 40px;
+  margin-top: 40px; /* Space below the icon container */
+}
+
+.product-icon {
+  font-size: 100px; /* Icon size */
+}
+
+.product:hover {
+  transform: translateY(-10px);
 }
 
 .product img {
@@ -180,10 +212,11 @@ h1 {
 .filter {
   background-color: var(--filter-bg);
   color: var(--filter-color);
-  padding: 15px 20px;
+  padding: 10px 20px;
   border: 1px solid var(--product-border);
   border-radius: 5px;
   cursor: pointer;
+  width: 12%;
   font-size: 16px;
   text-align: left;
   margin-top: 10px;
@@ -277,4 +310,77 @@ select {
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease,
     border-color 0.3s ease;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-image: var(--arrow-image);
+
+  background-position: calc(100% - 20px) center;
+  background-size: 24px 24px;
 }
+.checkout-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.checkout-info {
+  flex: 0 0 60%;
+}
+
+.checkout-summary {
+  flex: 0 0 40%;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center; /* Align items vertically centered */
+  margin-bottom: 15px; /* Space between items */
+  border-bottom: 1px solid #ccc; /* Optional: line separating items */
+  padding-bottom: 10px; /* Space below each item */
+  color: var(--product-title-color);
+}
+
+.item-details {
+  flex: 1; /* Take the remaining space */
+}
+
+.item-name {
+  font-size: 20px; /* Font size for item name */
+  font-weight: 700; /* Make item name bold */
+}
+
+.item-price {
+  display: block; /* Stack these items vertically */
+  font-size: 14px;
+  margin-top: 10px;
+}
+.item-quantity {
+  display: block; /* Stack these items vertically */
+  font-size: 14px;
+}
+
+.checkout-icon-container {
+  flex: 0 0 40px; /* Fixed width for the icon container */
+  margin-right: 30px; /* Space between icon and text */
+}
+
+.checkout-icon {
+  font-size: 40px; /* Adjust size of the icon */
+  color: var(--product-title-color);
+}
+
+.delete-button {
+  background-color: #ff4c4c; /* Red background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 5px 10px; /* Some padding */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-left: 10px; /* Space between item details and button */
+  border-radius: 5px; /* Rounded corners */
+}
+
