@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Math Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <link id="theme-style" rel="stylesheet" href="src/css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>
+          <img src="src/img/logo.png" alt="Logo" class="logo" />
+          {{ sitename }}
+        </h1>
+        <div class="header-right">
+          <button class="cart-button" @click="toggleCart">
+            <i class="fas fa-shopping-cart"></i>
+            {{ showCart ? 'Back to Products' : 'Checkout' }}
+          </button>
+
+          <!-- Switch for theme toggle -->
+          <label class="switch">
+            <input type="checkbox" v-model="isDarkMode" @click="toggleTheme" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </header>
+
+      <div class="content" id="product_content" v-if="!showCart">
+        <!-- <div class="image-container">
+          <img src="src/img/main-2.png" alt="Banner Image" />
+        </div>
+
+        <div class="section-heading">All the classes you need in one place</div>
+        <h1 class="section-info">
+          From critical skills to technical topics, Meow Meow Academy supports
+          your educational development.
+        </h1> -->
+
+        <h1 class="section-heading">Courses:</h1>
+
+        <label for="sortAttribute">Sort by:</label>
+        <select v-model="sortAttribute" id="sortAttribute" class="filter">
+          <option value="price">Price</option>
+          <option value="location">Location</option>
+          <option value="title">Subject</option>
+          <option value="availableInventory">Availability</option>
+        </select>
+
+        <button @click="toggleSortOrder" class="filter">
+          Order: {{ sortOrder }}
+        </button>
+
+        <main>
+          <transition-group name="fade" tag="div" class="product-grid">
+            <div
+              v-for="product in sortedProducts"
+              :key="product.id"
+              class="product"
+            >
+              <div class="product-icon-container">
+                <i :class="product.icon" class="product-icon"></i>
+              </div>
+
+              <div class="product-title">
+                <span v-text="product.title"></span>
+                <span class="product-price"
+                  >${{ product.price.toFixed(2) }}</span
+                >
+              </div>
+              <div>{{ product.location }}</div>
+              <div>Slots: {{ product.availableInventory }}</div>
+              <button
+                class="add-to-cart"
+                @click="addToCart(product)"
+                :disabled="product.availableInventory <= 0"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </transition-group>
+        </main>
+      </div>
+      
+      <div class="content" id="checkout_form" v-if="showCart">
+        <h2 class="section-heading" style="margin-left: 0px">Checkout</h2>
+        <div class="checkout-container">
+          <div class="checkout-info">
+            <h3 class="section-heading" style="margin-left: 0px; font-size: 24px;">Cart Items</h3>
+            <div v-for="(item, productId) in cartItems" :key="productId" class="cart-item">
+              <div class="checkout-icon-container">
+                <i :class="item.icon" class="checkout-icon"></i>
+              </div>
+              <div class="item-details">
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-price">Price: ${{ item.price }}</span>
+                <span class="item-quantity">Quantity: {{ item.count }}</span>
+              </div>
+              <button class="delete-button" @click="removeFromCart(productId)">Delete</button>
+
+            </div>
+          </div>
+          <div class="checkout-summary">
+            <!-- Summary will go here later -->
+          </div>
+      
+          
+        </div>
+      </div>
+      
+
+
+    
+      <script src="src/js/script.js"></script>
+      
+      
+
+    
+  </body>
+</html>
