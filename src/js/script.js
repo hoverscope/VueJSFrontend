@@ -9,10 +9,11 @@ let webstore = new Vue({
     showCart: false,
     cartCount: 0,
     cartItems: {},
+    searchQuery: "",
 
     checkoutData: {
       name: "",
-      phone: "",
+      email: "",
     },
 
     products: [
@@ -116,6 +117,18 @@ let webstore = new Vue({
         }
       });
     },
+
+    totalPrice() {
+      return Object.values(this.cartItems).reduce((total, item) => {
+        return total + item.price * item.count;
+      }, 0);
+    },
+
+    isCartEmpty() {
+      return !this.showCart && this.cartCount === 0;
+    },
+  
+  
   },
   methods: {
     toggleSortOrder() {
@@ -129,6 +142,9 @@ let webstore = new Vue({
     },
 
     toggleCart() {
+     
+  
+      // Allow switching from cart to products regardless of cart state
       this.showCart = !this.showCart;
     },
 
@@ -145,23 +161,22 @@ let webstore = new Vue({
     },
 
     addToCart(product) {
-        if (product.availableInventory > 0) {
-          product.availableInventory--; // Reduce the available inventory
-          if (this.cartItems[product.id]) {
-            this.cartItems[product.id].count++; // Increment count
-          } else {
-            // Store title, price, and count for the cart item
-            this.cartItems[product.id] = { 
-              name: product.title, 
-              icon:product.icon,
-              price: product.price, // Add price
-              count: 1 
-            };
-          }
-          this.cartCount++; // Increase cart count
-        }
-      },
-      
+      // Check if the product is already in the cart
+      if (!this.cartItems[product.id] && product.availableInventory > 0) {
+        product.availableInventory--; // Reduce the available inventory
+        // Add product to cart with initial count of 1
+        this.cartItems[product.id] = { 
+          name: product.title, 
+          icon: product.icon,
+          price: product.price,
+          count: 1 
+        };
+        this.cartCount++; // Increment cart count
+      } else {
+        console.log(`${product.title} is already in the cart.`);
+      }
+    },
+    
 
     submitCheckout() {
       // Handle form submission (e.g., validate and process order)
@@ -177,31 +192,49 @@ let webstore = new Vue({
       this.showCart = false; // Optionally close the cart after submission
     },
 
+    isInCart(product) {
+      return !!this.cartItems[product.id];
+    },
     removeFromCart(productId) {
-        // Check if the item exists in the cart
-        if (this.cartItems[productId]) {
-          const item = this.cartItems[productId];
-      
-          // Restore the product's available inventory
-          const product = this.products.find(p => p.title === item.name);
-          if (product) {
-            product.availableInventory += item.count; // Restore inventory
-          }
-      
-          // Remove the item from the cart
-          this.cartCount -= item.count; // Decrease cart count
-          this.$delete(this.cartItems, productId); // Use Vue's reactivity method to delete the item
-      
-          console.log(`${item.name} removed from cart.`);
+      // Check if the item exists in the cart
+      if (this.cartItems[productId]) {
+        const item = this.cartItems[productId];
+    
+        // Restore the product's available inventory
+        const product = this.products.find(p => p.title === item.name);
+        if (product) {
+          product.availableInventory += item.count; // Restore inventory
         }
-      },
-      
+    
+        // Remove the item from the cart
+        this.cartCount -= item.count; // Decrease cart count
+        this.$delete(this.cartItems, productId); // Use Vue's reactivity method to delete the item
+    
+        console.log(`${item.name} removed from cart.`);
+      }
+    },
+    
 
     getProductImage(productId) {
         const product = this.products.find(p => p.id === productId);
         // Return the icon class or path, based on how you are using the icons
         return product ? product.icon : 'default-icon-class'; // Provide a default icon if the product is not found
-      }
+      },
+
+      performSearch() {
+        console.log('Searching for:', this.searchQuery);
+      },
+    
+      matchesSearch(product) {
+        const query = this.searchQuery.toLowerCase();
+        return (
+          product.title.toLowerCase().includes(query) ||
+          product.location.toLowerCase().includes(query)
+        );
+        
+      },
+      
+
       
   
   

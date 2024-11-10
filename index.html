@@ -19,10 +19,12 @@
           {{ sitename }}
         </h1>
         <div class="header-right">
-          <button class="cart-button" @click="toggleCart">
+          <button class="cart-button" @click="toggleCart" :disabled="isCartEmpty">
             <i class="fas fa-shopping-cart"></i>
-            {{ showCart ? 'Back to Products' : 'Checkout' }}
+            {{ showCart ? 'Back to Products' : `Checkout (${cartCount})` }}
           </button>
+          
+          
 
           <!-- Switch for theme toggle -->
           <label class="switch">
@@ -33,24 +35,27 @@
       </header>
 
       <div class="content" id="product_content" v-if="!showCart">
-        <!-- <div class="image-container">
-          <img src="src/img/main-2.png" alt="Banner Image" />
-        </div>
 
-        <div class="section-heading">All the classes you need in one place</div>
-        <h1 class="section-info">
-          From critical skills to technical topics, Meow Meow Academy supports
-          your educational development.
-        </h1> -->
-
+      
         <h1 class="section-heading">Courses:</h1>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <label class="search-label">Use the form below to filter your search</label>
+          <div class="search-bar">
+            <input v-model="searchQuery" type="text" placeholder="Search for a class..." @input="performSearch" />
+            <button @click="performSearch">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
 
         <label for="sortAttribute">Sort by:</label>
         <select v-model="sortAttribute" id="sortAttribute" class="filter">
           <option value="price">Price</option>
           <option value="location">Location</option>
           <option value="title">Subject</option>
-          <option value="availableInventory">Availability</option>
+          <option value="availableInventory">Available Seats</option>
         </select>
 
         <button @click="toggleSortOrder" class="filter">
@@ -59,11 +64,7 @@
 
         <main>
           <transition-group name="fade" tag="div" class="product-grid">
-            <div
-              v-for="product in sortedProducts"
-              :key="product.id"
-              class="product"
-            >
+            <div v-for="product in sortedProducts":key="product.id" class="product" v-if="matchesSearch(product)">
               <div class="product-icon-container">
                 <i :class="product.icon" class="product-icon"></i>
               </div>
@@ -74,15 +75,18 @@
                   >${{ product.price.toFixed(2) }}</span
                 >
               </div>
-              <div>{{ product.location }}</div>
+              <div style="margin-bottom: 5px;">
+                <i class="fas fa-map-marker-alt" style="font-size: 0.875em; vertical-align: middle;"></i> {{ product.location }}
+              </div>
+              
               <div>Slots: {{ product.availableInventory }}</div>
               <button
-                class="add-to-cart"
-                @click="addToCart(product)"
-                :disabled="product.availableInventory <= 0"
-              >
-                Add to Cart
-              </button>
+              class="add-to-cart"
+              @click="addToCart(product)"
+              :disabled="isInCart(product) || product.availableInventory <= 0"
+            >
+              Add to Cart
+            </button>
             </div>
           </transition-group>
         </main>
@@ -102,17 +106,36 @@
                 <span class="item-price">Price: ${{ item.price }}</span>
                 <span class="item-quantity">Quantity: {{ item.count }}</span>
               </div>
-              <button class="delete-button" @click="removeFromCart(productId)">Delete</button>
-
+              <button class="delete-button" @click="removeFromCart(productId)">
+                <i class="fas fa-trash-alt"></i> 
+              </button>
             </div>
           </div>
-          <div class="checkout-summary">
-            <!-- Summary will go here later -->
-          </div>
       
-          
+          <!-- Checkout Summary -->
+          <div class="checkout-summary">
+            <h3 class="checkout-heading" style="font-size: 24px;">Order Summary</h3>
+            <p>Total Price: ${{ totalPrice }}</p>
+          </div>
+        </div>
+      
+        <!-- User Information Form -->
+        <div class="checkout-form">
+          <h3 class="checkout-heading" style="font-size: 24px;">Customer Information</h3>
+          <form @submit.prevent="submitOrder">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" id="name" v-model="checkoutData.name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" v-model="checkoutData.email" required />
+            </div>
+            <button type="submit" class="submit-order-button">Submit Order</button>
+          </form>
         </div>
       </div>
+      
       
 
 
