@@ -161,7 +161,7 @@ let webstore = new Vue({
     },
 
     updateInventory(item) {
-      return fetch(`http://localhost:3000/M00909858/update_inventory`, {
+      return fetch(`http://localhost:3000/M00909858/update_inventory/${item.id}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
