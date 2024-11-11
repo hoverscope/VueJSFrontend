@@ -91,7 +91,7 @@ let webstore = new Vue({
     },
 
     fetchProducts() {
-      fetch("http://localhost:3000/M00909858/lessons")
+      fetch("https://afterschoolbackend-qm5c.onrender.com/M00909858/lessons")
         .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to fetch products");
@@ -130,7 +130,7 @@ let webstore = new Vue({
         date: new Date().toISOString()
       };
 
-      fetch('http://localhost:3000/M00909858/orders', {
+      fetch('https://afterschoolbackend-qm5c.onrender.com/M00909858/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -161,7 +161,7 @@ let webstore = new Vue({
     },
 
     updateInventory(item) {
-      return fetch(`http://localhost:3000/M00909858/update_inventory/${item.id}`, { 
+      return fetch(`https://afterschoolbackend-qm5c.onrender.com/M00909858/update_inventory/${item.id}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
