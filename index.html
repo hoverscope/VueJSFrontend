@@ -19,12 +19,14 @@
           {{ sitename }}
         </h1>
         <div class="header-right">
-          <button class="cart-button" @click="toggleCart" :disabled="isCartEmpty">
+          <button
+            class="cart-button"
+            @click="toggleCart"
+            :disabled="isCartEmpty"
+          >
             <i class="fas fa-shopping-cart"></i>
             {{ showCart ? 'Back to Products' : `Checkout (${cartCount})` }}
           </button>
-          
-          
 
           <!-- Switch for theme toggle -->
           <label class="switch">
@@ -35,15 +37,20 @@
       </header>
 
       <div class="content" id="product_content" v-if="!showCart">
-
-      
         <h1 class="section-heading">Courses:</h1>
 
         <!-- Search Bar -->
         <div class="search-container">
-          <label class="search-label">Use the form below to filter your search</label>
+          <label class="search-label"
+            >Use the form below to filter your search</label
+          >
           <div class="search-bar">
-            <input v-model="searchQuery" type="text" placeholder="Search for a class..." @input="performSearch" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search for a class..."
+              @input="performSearch"
+            />
             <button @click="performSearch">
               <i class="fas fa-search"></i>
             </button>
@@ -64,40 +71,51 @@
 
         <main>
           <transition-group name="fade" tag="div" class="product-grid">
-            <div v-for="product in sortedProducts":key="product.id" class="product" v-if="matchesSearch(product)">
+            <div
+              v-for="product in sortedProducts"
+              :key="product.id"
+              class="product"
+              v-if="matchesSearch(product)"
+            >
               <div class="product-icon-container">
                 <i :class="product.icon" class="product-icon"></i>
               </div>
-
               <div class="product-title">
                 <span v-text="product.title"></span>
                 <span class="product-price"
                   >${{ product.price.toFixed(2) }}</span
                 >
               </div>
-              <div style="margin-bottom: 5px;">
-                <i class="fas fa-map-marker-alt" style="font-size: 0.875em; vertical-align: middle;"></i> {{ product.location }}
+              <div style="margin-bottom: 5px">
+                <i
+                  class="fas fa-map-marker-alt"
+                  style="font-size: 0.875em; vertical-align: middle"
+                ></i>
+                {{ product.location }}
               </div>
-              
               <div>Slots: {{ product.availableInventory }}</div>
               <button
-              class="add-to-cart"
-              @click="addToCart(product)"
-              :disabled="isInCart(product) || product.availableInventory <= 0"
-            >
-              Add to Cart
-            </button>
+                class="add-to-cart"
+                @click="addToCart(product)"
+                :disabled="isInCart(product) || product.availableInventory <= 0"
+              >
+                Add to Cart
+              </button>
             </div>
           </transition-group>
         </main>
       </div>
-      
+
       <div class="content" id="checkout_form" v-if="showCart">
-        <h2 class="section-heading" style="margin-left: 0px">Checkout</h2>
+        <h2 class="section-heading">Checkout</h2>
         <div class="checkout-container">
           <div class="checkout-info">
-            <h3 class="section-heading" style="margin-left: 0px; font-size: 24px;">Cart Items</h3>
-            <div v-for="(item, productId) in cartItems" :key="productId" class="cart-item">
+            <h3 class="section-heading">Cart Items</h3>
+            <div
+              v-for="(item, productId) in cartItems"
+              :key="productId"
+              class="cart-item"
+            >
               <div class="checkout-icon-container">
                 <i :class="item.icon" class="checkout-icon"></i>
               </div>
@@ -107,43 +125,47 @@
                 <span class="item-quantity">Quantity: {{ item.count }}</span>
               </div>
               <button class="delete-button" @click="removeFromCart(productId)">
-                <i class="fas fa-trash-alt"></i> 
+                <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </div>
-      
+
           <!-- Checkout Summary -->
           <div class="checkout-summary">
-            <h3 class="checkout-heading" style="font-size: 24px;">Order Summary</h3>
+            <h3 class="checkout-heading">Order Summary</h3>
             <p>Total Price: ${{ totalPrice }}</p>
           </div>
         </div>
-      
+
         <!-- User Information Form -->
         <div class="checkout-form">
-          <h3 class="checkout-heading" style="font-size: 24px;">Customer Information</h3>
-          <form @submit.prevent="submitOrder">
+          <h3 class="checkout-heading">Customer Information</h3>
+          <form @submit.prevent="submitCheckout">
             <div class="form-group">
               <label for="name">Name:</label>
-              <input type="text" id="name" v-model="checkoutData.name" required />
+              <input
+                type="text"
+                id="name"
+                v-model="checkoutData.name"
+                required
+              />
             </div>
             <div class="form-group">
-              <label for="email">Email:</label>
-              <input type="email" id="email" v-model="checkoutData.email" required />
+              <label for="phone">Phone:</label>
+              <input
+                type="text"
+                id="phone"
+                v-model="checkoutData.phone"
+                required
+              />
             </div>
-            <button type="submit" class="submit-order-button">Submit Order</button>
+            <button type="submit" class="submit-order-button">
+              Submit Order
+            </button>
           </form>
         </div>
       </div>
-      
-      
-
-
-    
-      <script src="src/js/script.js"></script>
-      
-      
-
-    
+    </div>
+    <script src="src/js/script.js"></script>
   </body>
 </html>

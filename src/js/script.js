@@ -1,4 +1,3 @@
-
 let webstore = new Vue({
   el: "#app",
   data: {
@@ -13,91 +12,11 @@ let webstore = new Vue({
 
     checkoutData: {
       name: "",
-      email: "",
+      phone: "",
     },
 
-    products: [
-      {
-        id: 1001,
-        title: "Math Classes",
-        price: 200.0,
-        icon: "fas fa-calculator",
-        location: "London, United Kingdom",
-        availableInventory: 5,
-      },
-      {
-        id: 1002,
-        title: "Chemistry Classes",
-        price: 150.0,
-        icon: "fas fa-flask",
-        location: "New York, USA",
-        availableInventory: 5,
-      },
-      {
-        id: 1003,
-        title: "History Classes",
-        price: 100.0,
-        icon: "fas fa-solid fa-book",
-        location: "Berlin, Germany",
-        availableInventory: 5,
-      },
-      {
-        id: 1004,
-        title: "Geography Classes",
-        price: 130.0,
-        icon: "fas fa-globe-africa",
-        location: "Paris, France",
-        availableInventory: 5,
-      },
-      {
-        id: 1005,
-        title: "Physics Classes",
-        price: 180.0,
-        icon: "fas fa-atom",
-        location: "Tokyo, Japan",
-        availableInventory: 5,
-      },
-      {
-        id: 1006,
-        title: "Biology Classes",
-        price: 200.0,
-        icon: "fas fa-dna",
-        location: "Dubai, United Kingdom",
-        availableInventory: 5,
-      },
-      {
-        id: 1007,
-        title: "Music Classes",
-        price: 200.0,
-        icon: "fas fa-guitar",
-        location: "Dubai, United Kingdom",
-        availableInventory: 5,
-      },
-      {
-        id: 1008,
-        title: "Law Classes",
-        price: 200.0,
-        icon: "fas fa-gavel",
-        location: "Dubai, United Kingdom",
-        availableInventory: 5,
-      },
-      {
-        id: 1009,
-        title: "Art Classes",
-        price: 200.0,
-        icon: "fas fa-palette",
-        location: "Dubai, United Kingdom",
-        availableInventory: 5,
-      },
-      {
-        id: 10010,
-        title: "Economics Classes",
-        price: 200.0,
-        icon: "fas fa-money-check-alt",
-        location: "Dubai, United Kingdom",
-        availableInventory: 5,
-      },
-    ],
+    products: [],
+    invCount: {} // Store inventory count for each product here
   },
   computed: {
     sortedProducts() {
@@ -126,9 +45,7 @@ let webstore = new Vue({
 
     isCartEmpty() {
       return !this.showCart && this.cartCount === 0;
-    },
-  
-  
+    }
   },
   methods: {
     toggleSortOrder() {
@@ -142,104 +59,163 @@ let webstore = new Vue({
     },
 
     toggleCart() {
-     
-  
-      // Allow switching from cart to products regardless of cart state
       this.showCart = !this.showCart;
     },
 
     updateTheme() {
       const link = document.getElementById("theme-style");
-      // Apply the appropriate class based on the mode
       if (this.isDarkMode) {
         link.href = "src/css/styles.css"; // Assume styles.css includes both
-        document.body.classList.add("dark-mode"); // Add dark mode class
+        document.body.classList.add("dark-mode");
       } else {
         link.href = "src/css/styles.css"; // Use the same for light mode
-        document.body.classList.remove("dark-mode"); // Remove dark mode class
+        document.body.classList.remove("dark-mode");
       }
     },
-
     addToCart(product) {
-      // Check if the product is already in the cart
       if (!this.cartItems[product.id] && product.availableInventory > 0) {
-        product.availableInventory--; // Reduce the available inventory
-        // Add product to cart with initial count of 1
+        product.availableInventory--; 
+        this.invCount[product.id] = product.availableInventory;
+    
         this.cartItems[product.id] = { 
-          name: product.title, 
+          id: product.id,  // Add this line to include product ID
+          title: product.title, 
           icon: product.icon,
           price: product.price,
           count: 1 
         };
-        this.cartCount++; // Increment cart count
+        this.cartCount++;
       } else {
         console.log(`${product.title} is already in the cart.`);
       }
     },
-    
+
+    fetchProducts() {
+      fetch("http://localhost:3000/M00909858/lessons")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch products");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.products = data;
+          this.products.forEach(product => {
+            this.invCount[product.id] = product.availableInventory; // Initialize invCount for each product
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching products:", error);
+        });
+    },
 
     submitCheckout() {
-      // Handle form submission (e.g., validate and process order)
-      console.log("Checkout Data:", this.checkoutData);
-      // Reset form after submission
-      this.checkoutData = {
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
+      const nameRegex = /^[A-Za-z\s]+$/;
+      if (!this.checkoutData.name || !nameRegex.test(this.checkoutData.name)) {
+        alert('Please enter a valid name (letters and spaces only).');
+        return; // Stop form submission
+      }
+
+      const phoneRegex = /^(\+?\d{1,3}[-\s]?)?(\(\d{3}\)|\d{3})[-\s]?\d{3}[-\s]?\d{4}$/;
+      if (!this.checkoutData.phone || !phoneRegex.test(this.checkoutData.phone)) {
+        alert('Please enter a valid phone number (10 digits only).');
+        return; // Stop form submission
+      }
+
+      const orderData = {
+        name: this.checkoutData.name,
+        phone: this.checkoutData.phone,
+        items: Object.values(this.cartItems),
+        totalAmount: this.totalPrice,
+        date: new Date().toISOString()
       };
-      // Optionally, toggle the cart view
-      this.showCart = false; // Optionally close the cart after submission
+
+      fetch('http://localhost:3000/M00909858/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        alert('Your order has been successfully submitted!');
+        return Promise.all(
+          Object.values(this.cartItems).map(item => this.updateInventory(item))
+        );
+      })
+      .then(() => {
+        this.checkoutData = { name: "", phone: "" };
+        this.cartItems = {}; 
+        this.showCart = false;
+      })
+      .catch(error => {
+        console.error('Error submitting order or updating inventory:', error);
+        alert('Failed to submit your order. Please try again later.');
+      });
+    },
+
+    updateInventory(item) {
+      return fetch(`http://localhost:3000/M00909858/update_inventory`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: item.id,
+          availableInventory: this.invCount[item.id] // Using the tracked inventory count
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to update inventory for item ${item.title}`);
+        }
+        return response.json();
+      });
     },
 
     isInCart(product) {
       return !!this.cartItems[product.id];
     },
+
     removeFromCart(productId) {
-      // Check if the item exists in the cart
       if (this.cartItems[productId]) {
         const item = this.cartItems[productId];
-    
-        // Restore the product's available inventory
         const product = this.products.find(p => p.title === item.name);
         if (product) {
-          product.availableInventory += item.count; // Restore inventory
+          product.availableInventory += item.count;
         }
-    
-        // Remove the item from the cart
-        this.cartCount -= item.count; // Decrease cart count
-        this.$delete(this.cartItems, productId); // Use Vue's reactivity method to delete the item
-    
+
+        this.cartCount -= item.count;
+        this.$delete(this.cartItems, productId);
         console.log(`${item.name} removed from cart.`);
       }
     },
-    
 
-    getProductImage(productId) {
+    getProductIcon(productId) {
         const product = this.products.find(p => p.id === productId);
-        // Return the icon class or path, based on how you are using the icons
-        return product ? product.icon : 'default-icon-class'; // Provide a default icon if the product is not found
-      },
+        return product ? product.icon : 'default-icon-class';
+    },
 
-      performSearch() {
-        console.log('Searching for:', this.searchQuery);
-      },
-    
-      matchesSearch(product) {
-        const query = this.searchQuery.toLowerCase();
-        return (
-          product.title.toLowerCase().includes(query) ||
-          product.location.toLowerCase().includes(query)
-        );
-        
-      },
-      
+    performSearch() {
+      console.log('Searching for:', this.searchQuery);
+    },
 
-      
-  
-  
+    matchesSearch(product) {
+      const query = this.searchQuery.toLowerCase();
+      return (
+        product.title.toLowerCase().includes(query) ||
+        product.location.toLowerCase().includes(query)
+      );
+    }
   },
   mounted() {
     this.updateTheme();
+    this.fetchProducts();
   },
 });

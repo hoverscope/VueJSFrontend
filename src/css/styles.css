@@ -430,6 +430,7 @@ select {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 20px;
+  color: var(--filter-color);
 }
 
 .form-group {
