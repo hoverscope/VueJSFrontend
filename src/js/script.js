@@ -168,7 +168,7 @@ let webstore = new Vue({
         },
         body: JSON.stringify({
           id: item.id,
-          availableInventory: this.invCount[item.id] // Using the tracked inventory count
+          availableInventory: this.invCount[item.id] 
         })
       })
       .then(response => {
