@@ -16,11 +16,12 @@ let webstore = new Vue({
     },
 
     products: [],
+    filteredProducts: [], // Store filtered products for live search
     invCount: {} // Store inventory count for each product here
   },
   computed: {
     sortedProducts() {
-      return this.products.slice().sort((a, b) => {
+      return this.filteredProducts.slice().sort((a, b) => {
         let aVal = a[this.sortAttribute];
         let bVal = b[this.sortAttribute];
 
@@ -100,6 +101,7 @@ let webstore = new Vue({
         })
         .then((data) => {
           this.products = data;
+          this.filteredProducts = data; // Initialize filteredProducts with all products
           this.products.forEach(product => {
             this.invCount[product.id] = product.availableInventory; // Initialize invCount for each product
           });
@@ -204,7 +206,22 @@ let webstore = new Vue({
 
     performSearch() {
       console.log('Searching for:', this.searchQuery);
+      fetch(`https://afterschoolbackend-qm5c.onrender.com/M00909858/search_lessons?query=${encodeURIComponent(this.searchQuery)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch search results');
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.filteredProducts = data; // Update the filtered products with search results
+        })
+        .catch(error => {
+          console.error('Error fetching search results:', error);
+          alert('Failed to fetch search results. Please try again later.');
+        });
     },
+    
 
     matchesSearch(product) {
       const query = this.searchQuery.toLowerCase();
@@ -212,6 +229,11 @@ let webstore = new Vue({
         product.title.toLowerCase().includes(query) ||
         product.location.toLowerCase().includes(query)
       );
+    }
+  },
+  watch: {
+    searchQuery(newQuery) {
+      this.performSearch(); // Trigger search whenever the searchQuery changes
     }
   },
   mounted() {
