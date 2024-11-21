@@ -16,8 +16,11 @@ let webstore = new Vue({
     },
 
     products: [],
-    filteredProducts: [], // Store filtered products for live search
-    invCount: {} // Store inventory count for each product here
+    filteredProducts: [], 
+    invCount: {}, 
+
+    showModal: false, 
+    modalProduct: null
   },
   computed: {
     sortedProducts() {
@@ -202,6 +205,15 @@ let webstore = new Vue({
     getProductIcon(productId) {
         const product = this.products.find(p => p.id === productId);
         return product ? product.icon : 'default-icon-class';
+    },
+
+    showProductDetails(product) {
+      this.modalProduct = product;
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.modalProduct = null;
     },
 
     performSearch() {

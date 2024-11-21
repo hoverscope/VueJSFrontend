@@ -80,6 +80,8 @@
               :key="product.id"
               class="product"
               v-if="matchesSearch(product)"
+              @click="showProductDetails(product)"
+              style="cursor: pointer"
             >
               <div class="product-icon-container">
                 <i :class="product.icon" class="product-icon"></i>
@@ -107,6 +109,38 @@
               </button>
             </div>
           </transition-group>
+
+          <div v-if="showModal" class="modal" @click.self="closeModal">
+            <div class="modal-content">
+              <h2>{{ modalProduct?.title }}</h2>
+              <p>
+                <strong>Price:</strong> ${{ modalProduct?.price.toFixed(2) }}
+              </p>
+
+              <p>
+                <strong>Description:</strong>
+                {{ modalProduct?.description || "No description available." }}
+              </p>
+
+              <p>
+                <strong>Available Slots:</strong> {{
+                modalProduct?.availableInventory }}
+              </p>
+              <p><strong>Location:</strong> {{ modalProduct?.location }}</p>
+
+              <!-- Google Maps Embed -->
+              <iframe
+                v-if="modalProduct?.mapEmbed"
+                :src="'https://www.google.com/maps/' + modalProduct.mapEmbed"
+                width="600"
+                height="450"
+                style="border: 0"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+          </div>
         </main>
       </div>
 
