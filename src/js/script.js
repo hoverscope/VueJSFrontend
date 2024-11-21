@@ -205,32 +205,31 @@ let webstore = new Vue({
     },
 
     performSearch() {
-      console.log('Searching for:', this.searchQuery);
+      console.log("Searching for:", this.searchQuery);
     
       // If the search query is empty, reset to show all products
       if (!this.searchQuery.trim()) {
-        this.filteredProducts = this.products; // Reset filteredProducts to include all products
+        this.filteredProducts = [...this.products]; // Ensure filteredProducts includes all products
         return;
       }
     
-      fetch(`https://afterschoolbackend-qm5c.onrender.com/M00909858/search_lessons?query=${encodeURIComponent(this.searchQuery)}`)
-        .then(response => {
+      fetch(
+        `https://afterschoolbackend-qm5c.onrender.com/M00909858/search_lessons?query=${encodeURIComponent(
+          this.searchQuery
+        )}`
+      )
+        .then((response) => {
           if (!response.ok) {
-            this.filteredProducts = this.products; // Reset to show all products if no results
+            throw new Error("Failed to fetch search results");
           }
           return response.json();
         })
-        .then(data => {
-          if (data.length === 0) {
-            console.log('No results found. Showing all lessons.');
-            this.filteredProducts = this.products; // Reset to show all products if no results
-          } else {
-            this.filteredProducts = data; // Update with search results
-          }
+        .then((data) => {
+          this.filteredProducts = data.length ? data : [...this.products]; // If no results, show all products
         })
-        .catch(error => {
-          console.error('Error fetching search results:', error);
-          this.filteredProducts = this.products; // Fallback to show all products on error
+        .catch((error) => {
+          console.error("Error fetching search results:", error);
+          this.filteredProducts = [...this.products]; // Fallback to show all products on error
         });
     },
     
