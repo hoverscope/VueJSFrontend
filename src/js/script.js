@@ -216,7 +216,7 @@ let webstore = new Vue({
       fetch(`https://afterschoolbackend-qm5c.onrender.com/M00909858/search_lessons?query=${encodeURIComponent(this.searchQuery)}`)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Failed to fetch search results');
+            this.filteredProducts = this.products; // Reset to show all products if no results
           }
           return response.json();
         })
