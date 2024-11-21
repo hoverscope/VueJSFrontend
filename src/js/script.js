@@ -230,7 +230,6 @@ let webstore = new Vue({
         })
         .catch(error => {
           console.error('Error fetching search results:', error);
-          alert('Failed to fetch search results. Please try again later.');
           this.filteredProducts = this.products; // Fallback to show all products on error
         });
     },
