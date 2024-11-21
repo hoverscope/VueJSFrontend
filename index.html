@@ -102,7 +102,7 @@
               <div>Slots: {{ product.availableInventory }}</div>
               <button
                 class="add-to-cart"
-                @click="addToCart(product)"
+                @click.stop="addToCart(product)"
                 :disabled="isInCart(product) || product.availableInventory <= 0"
               >
                 Add to Cart
@@ -142,6 +142,19 @@
             </div>
           </div>
         </main>
+      </div>
+
+      <div v-if="isVisible" class="toast active">
+        <div class="toast-content">
+          <i class="fas fa-check check"></i>
+          <div class="message">
+            <span class="text text-1">{{ title }}</span>
+            <span class="text text-2">{{ message }}</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-xmark close" @click="closeToast"></i>
+
+        <div class="progress"></div>
       </div>
 
       <div class="content" id="checkout_form" v-if="showCart">

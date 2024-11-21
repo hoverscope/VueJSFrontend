@@ -20,7 +20,13 @@ let webstore = new Vue({
     invCount: {}, 
 
     showModal: false, 
-    modalProduct: null
+    modalProduct: null,
+
+    isVisible: false,
+    title: 'Success',
+    message: 'Your order has been submitted succesfully!.',
+    progressActive: false,
+
   },
   computed: {
     sortedProducts() {
@@ -149,15 +155,16 @@ let webstore = new Vue({
         return response.json();
       })
       .then(data => {
-        alert('Your order has been successfully submitted!');
-        return Promise.all(
+        this.showToast();
+          return Promise.all(
           Object.values(this.cartItems).map(item => this.updateInventory(item))
         );
       })
       .then(() => {
-        this.checkoutData = { name: "", phone: "" };
-        this.cartItems = {}; 
-        this.showCart = false;
+        this.cartItems = {};  // Clear cart items
+    this.cartCount = 0;    // Reset cart count
+    this.showCart = false; // Close cart view
+    this.checkoutData = { name: "", phone: "" };  // Clear checkout data
       })
       .catch(error => {
         console.error('Error submitting order or updating inventory:', error);
@@ -253,7 +260,25 @@ let webstore = new Vue({
         product.title.toLowerCase().includes(query) ||
         product.location.toLowerCase().includes(query)
       );
+    },
+
+    showToast() {
+      this.isVisible = true;
+      this.progressActive = true;
+      
+      setTimeout(() => {
+        this.isVisible = false;
+      }, 5000); // Hide toast after 5 seconds
+      
+      setTimeout(() => {
+        this.progressActive = false;
+      }, 5300); // Hide progress bar after animation is complete
+    },
+    closeToast() {
+      this.isVisible = false;
+      this.progressActive = false;
     }
+
   },
   watch: {
     searchQuery(newQuery) {
