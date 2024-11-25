@@ -471,6 +471,12 @@ select {
   background-color: #820000;
 }
 
+.submit-order-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 /* Styles for the search bar */
 .search-container {
   margin-top: 10px;

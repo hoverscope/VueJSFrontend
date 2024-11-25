@@ -49,9 +49,22 @@ let webstore = new Vue({
 
     totalPrice() {
       return Object.values(this.cartItems).reduce((total, item) => {
-        return total + item.price * item.count;
+        return total + item.price * item.count; // Multiply by quantity
       }, 0);
     },
+
+    isFormValid() {
+      // Check if both name and phone are not empty
+      const nameValid = this.checkoutData.name.trim() !== "";
+      const phoneValid = this.checkoutData.phone.trim() !== "";
+  
+      return nameValid && phoneValid;  // Return true if both are not empty
+  },
+  
+    
+    
+    
+
 
     isCartEmpty() {
       return !this.showCart && this.cartCount === 0;
@@ -82,21 +95,29 @@ let webstore = new Vue({
         document.body.classList.remove("dark-mode");
       }
     },
-    addToCart(product) {
-      if (!this.cartItems[product.id] && product.availableInventory > 0) {
-        product.availableInventory--; 
-        this.invCount[product.id] = product.availableInventory;
     
-        this.cartItems[product.id] = { 
-          id: product.id,  // Add this line to include product ID
-          title: product.title, 
-          icon: product.icon,
-          price: product.price,
-          count: 1 
-        };
-        this.cartCount++;
+    addToCart(product) {
+      if (product.availableInventory > 0) {
+        product.availableInventory--; 
+        this.invCount[product.id] = product.availableInventory; 
+
+        if (!this.cartItems[product.id]) {
+          // If product is not already in the cart, add it
+          this.cartItems[product.id] = {
+            id: product.id,
+            title: product.title,
+            icon: product.icon,
+            price: product.price,
+            count: 1 // Initialize count to 1
+          };
+        } else {
+          // If product is already in the cart, increment the count
+          this.cartItems[product.id].count++;
+        }
+
+        this.cartCount++; // Update cart count
       } else {
-        console.log(`${product.title} is already in the cart.`);
+        console.log(`${product.title} is out of stock.`);
       }
     },
 
@@ -192,22 +213,37 @@ let webstore = new Vue({
     },
 
     isInCart(product) {
-      return !!this.cartItems[product.id];
+      return product.availableInventory <= 0;
     },
+    
+    
+    
 
     removeFromCart(productId) {
       if (this.cartItems[productId]) {
         const item = this.cartItems[productId];
-        const product = this.products.find(p => p.title === item.name);
+    
+        // Restore the entire count of the product to available inventory
+        if (this.invCount[productId] !== undefined) {
+          this.invCount[productId] += item.count;
+        }
+    
+        // Find the product in the products array and update its availableInventory
+        const product = this.products.find(p => p.id === productId);
         if (product) {
           product.availableInventory += item.count;
         }
-
+    
+        // Update cart count by subtracting the item's count
         this.cartCount -= item.count;
+    
+        // Remove the item from the cart
         this.$delete(this.cartItems, productId);
-        console.log(`${item.name} removed from cart.`);
       }
     },
+    
+    
+  
 
     getProductIcon(productId) {
         const product = this.products.find(p => p.id === productId);
