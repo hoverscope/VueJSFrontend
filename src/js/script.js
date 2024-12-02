@@ -61,11 +61,6 @@ let webstore = new Vue({
       return nameValid && phoneValid;  // Return true if both are not empty
   },
   
-    
-    
-    
-
-
     isCartEmpty() {
       return !this.showCart && this.cartCount === 0;
     }

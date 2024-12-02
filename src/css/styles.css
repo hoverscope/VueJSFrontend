@@ -124,17 +124,17 @@ h1 {
   transition: opacity 1s ease;
 }
 
-.fade-enter, 
-.fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-  opacity: 0; /* Start with opacity 0 */
-  transform: translateY(10px); /* Optional: slide up effect on enter */
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .product-icon-container {
-  display: flex; /* Use flexbox for the icon container */
-  justify-content: center; /* Center the icon horizontally */
+  display: flex;
+  justify-content: center;
   margin-bottom: 40px;
-  margin-top: 40px; /* Space below the icon container */
+  margin-top: 40px;
 }
 
 .product-icon {
@@ -380,10 +380,10 @@ select {
 
 .item-price,
 .item-quantity {
-  display: block; /* Stack these items vertically */
+  display: block;
   font-size: 14px;
   margin-top: 5px;
-  color: var(--filter-color); /* Added new color variable */
+  color: var(--filter-color);
 }
 
 .delete-button {
@@ -407,7 +407,7 @@ select {
   background-color: var(--body-bg);
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  color: var(--filter-color); /* Added new color variable */
+  color: var(--filter-color);
 }
 
 .checkout-heading h3 {
@@ -434,20 +434,20 @@ select {
 
 .form-group {
   display: flex;
-  flex-direction: column; /* Stack the label and input vertically */
-  align-items: flex-start; /* Align the label and input to the left */
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 15px;
 }
 
 .form-group label {
   font-size: 16px;
   margin-bottom: 5px;
-  text-align: left; /* Ensure text is aligned to the left */
+  text-align: left;
   margin-left: 0px;
 }
 
 .form-group input {
-  width: 100%; /* Use full width to align input properly */
+  width: 100%;
   padding: 10px;
   font-size: 16px;
   border-radius: 5px;
@@ -545,8 +545,43 @@ select {
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   color: var(--filter-color);
+  transform-origin: center;
+  animation: appear 350ms ease-in 1;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Modal Styles */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background-color: var(--body-bg);
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: var(--filter-color);
+  transform-origin: center; /* Ensures scale originates from center */
+  animation: appear 350ms ease-in 1; /* Apply animation here */
 }
 
 .toast {

@@ -93,11 +93,7 @@
                 >
               </div>
               <div style="margin-bottom: 5px">
-                <i
-                  class="fas fa-map-marker-alt"
-                  style="font-size: 0.875em; vertical-align: middle"
-                ></i>
-                {{ product.location }}
+                <i class="fas fa-map-marker-alt"></i> {{ product.location }}
               </div>
               <div>Slots: {{ product.availableInventory }}</div>
               <button
@@ -110,18 +106,18 @@
             </div>
           </transition-group>
 
+          <!-- Modal with Fade Transition -->
+
           <div v-if="showModal" class="modal" @click.self="closeModal">
             <div class="modal-content">
               <h2>{{ modalProduct?.title }}</h2>
               <p>
                 <strong>Price:</strong> ${{ modalProduct?.price.toFixed(2) }}
               </p>
-
               <p>
                 <strong>Description:</strong>
                 {{ modalProduct?.description || "No description available." }}
               </p>
-
               <p>
                 <strong>Available Slots:</strong> {{
                 modalProduct?.availableInventory }}
